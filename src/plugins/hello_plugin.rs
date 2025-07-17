@@ -1,6 +1,7 @@
 use bevy::prelude::*;
-use crate::systems::person_systems::{add_people, greet_people, update_people};
+
 use crate::resources::timer::GreetTimer;
+use crate::systems::person_systems::{add_people, greet_people, update_people};
 
 pub struct HelloPlugin;
 

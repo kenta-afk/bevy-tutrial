@@ -1,5 +1,6 @@
 use bevy::prelude::*;
-use crate::components::person::{Person, Name};
+
+use crate::components::person::{Name, Person};
 use crate::resources::timer::GreetTimer;
 
 pub fn add_people(mut commands: Commands) {
@@ -8,7 +9,11 @@ pub fn add_people(mut commands: Commands) {
     commands.spawn((Person, Name::new("Charlie".to_string())));
 }
 
-pub fn greet_people(time: Res<Time>, mut timer: ResMut<GreetTimer>, query: Query<&Name, With<Person>>) {
+pub fn greet_people(
+    time: Res<Time>,
+    mut timer: ResMut<GreetTimer>,
+    query: Query<&Name, With<Person>>
+) {
     if timer.0.tick(time.delta()).just_finished() {
         for name in &query {
             println!("Hello, {}!", name.get());
