@@ -1,4 +1,5 @@
 use std::time::Duration;
+
 use bevy::prelude::*;
 
 #[derive(Component)]
@@ -6,7 +7,7 @@ pub struct AnimationConfig {
     pub first_sprite_index: usize,
     pub last_sprite_index: usize,
     pub fps: u8,
-    pub frame_timer: Timer,
+    pub frame_timer: Timer
 }
 
 impl AnimationConfig {
@@ -15,7 +16,7 @@ impl AnimationConfig {
             first_sprite_index: first,
             last_sprite_index: last,
             fps,
-            frame_timer: Self::timer_from_fps(fps),
+            frame_timer: Self::timer_from_fps(fps)
         }
     }
 

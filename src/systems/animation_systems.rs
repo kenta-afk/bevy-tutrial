@@ -1,4 +1,5 @@
 use bevy::prelude::*;
+
 use crate::components::animation::{AnimationConfig, LeftSprite};
 
 // This system runs when the user clicks the left arrow key or right arrow key
@@ -15,17 +16,17 @@ pub fn execute_animations(time: Res<Time>, mut query: Query<(&mut AnimationConfi
         config.frame_timer.tick(time.delta());
 
         // If it has been displayed for the user-defined amount of time (fps)...
-        if config.frame_timer.just_finished() {
-            if let Some(atlas) = &mut sprite.texture_atlas {
-                if atlas.index == config.last_sprite_index {
-                    // ...and it IS the last frame, then we move back to the first frame and stop.
-                    atlas.index = config.first_sprite_index;
-                } else {
-                    // ...and it is NOT the last frame, then we move to the next frame...
-                    atlas.index += 1;
-                    // ...and reset the frame timer to start counting all over again
-                    config.frame_timer = AnimationConfig::timer_from_fps(config.fps);
-                }
+        if config.frame_timer.just_finished()
+            && let Some(atlas) = &mut sprite.texture_atlas
+        {
+            if atlas.index == config.last_sprite_index {
+                // ...and it IS the last frame, then we move back to the first frame and stop.
+                atlas.index = config.first_sprite_index;
+            } else {
+                // ...and it is NOT the last frame, then we move to the next frame...
+                atlas.index += 1;
+                // ...and reset the frame timer to start counting all over again
+                config.frame_timer = AnimationConfig::timer_from_fps(config.fps);
             }
         }
     }
@@ -34,7 +35,7 @@ pub fn execute_animations(time: Res<Time>, mut query: Query<(&mut AnimationConfi
 pub fn setup_sprites(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
-    mut texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
+    mut texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>
 ) {
     commands.spawn(Camera2d);
 
@@ -46,7 +47,7 @@ pub fn setup_sprites(
             top: Val::Px(12.0),
             left: Val::Px(12.0),
             ..default()
-        },
+        }
     ));
 
     // Load the sprite sheet using the `AssetServer`
@@ -65,12 +66,12 @@ pub fn setup_sprites(
             image: texture.clone(),
             texture_atlas: Some(TextureAtlas {
                 layout: texture_atlas_layout.clone(),
-                index: animation_config_1.first_sprite_index,
+                index: animation_config_1.first_sprite_index
             }),
             ..default()
         },
         Transform::from_scale(Vec3::splat(6.0)).with_translation(Vec3::new(0.0, 0.0, 0.0)),
         LeftSprite,
-        animation_config_1,
+        animation_config_1
     ));
 }
