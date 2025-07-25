@@ -1,11 +1,52 @@
 use bevy::prelude::*;
 
-use crate::components::animation::{AnimationConfig, LeftSprite};
+use crate::components::animation::{AnimationConfig, Character, Direction};
+
+// This system changes the character's direction and animation when arrow keys are pressed
+pub fn change_direction(
+    input: Res<ButtonInput<KeyCode>>,
+    mut query: Query<(&mut Character, &mut AnimationConfig, &mut Sprite)>
+) {
+    for (mut character, mut animation_config, mut sprite) in &mut query {
+        if input.just_pressed(KeyCode::ArrowRight) && character.current_direction != Direction::Right {
+            character.current_direction = Direction::Right;
+            *animation_config = character.move_right_config.clone();
+            if let Some(atlas) = &mut sprite.texture_atlas {
+                atlas.index = animation_config.first_sprite_index;
+            }
+        } else if input.just_pressed(KeyCode::ArrowLeft) && character.current_direction != Direction::Left {
+            character.current_direction = Direction::Left;
+            *animation_config = character.move_left_config.clone();
+            if let Some(atlas) = &mut sprite.texture_atlas {
+                atlas.index = animation_config.first_sprite_index;
+            }
+        } else if input.just_pressed(KeyCode::ArrowUp) && character.current_direction != Direction::Forward {
+            character.current_direction = Direction::Forward;
+            *animation_config = character.move_forward_config.clone();
+            if let Some(atlas) = &mut sprite.texture_atlas {
+                atlas.index = animation_config.first_sprite_index;
+            }
+        } else if input.just_pressed(KeyCode::ArrowDown) && character.current_direction != Direction::Backward {
+            character.current_direction = Direction::Backward;
+            *animation_config = character.move_backward_config.clone();
+            if let Some(atlas) = &mut sprite.texture_atlas {
+                atlas.index = animation_config.first_sprite_index;
+            }
+        }
+    }
+}
 
 // This system runs when the user clicks the left arrow key or right arrow key
-pub fn trigger_animation<S: Component>(mut animation: Single<&mut AnimationConfig, With<S>>) {
-    // We create a new timer when the animation is triggered
-    animation.frame_timer = AnimationConfig::timer_from_fps(animation.fps);
+pub fn trigger_animation(
+    input: Res<ButtonInput<KeyCode>>,
+    mut query: Query<&mut AnimationConfig, With<Character>>
+) {
+    if input.just_pressed(KeyCode::ArrowRight) || input.just_pressed(KeyCode::ArrowLeft) || input.just_pressed(KeyCode::ArrowUp) || input.just_pressed(KeyCode::ArrowDown) {
+        for mut animation in &mut query {
+            // We create a new timer when the animation is triggered
+            animation.frame_timer = AnimationConfig::timer_from_fps(animation.fps);
+        }
+    }
 }
 
 // This system loops through all the sprites in the `TextureAtlas`, from  `first_sprite_index` to
@@ -54,24 +95,35 @@ pub fn setup_sprites(
     let texture = asset_server.load("gabe-idle-run.png");
 
     // The sprite sheet has 7 sprites arranged in a row, and they are all 24px x 24px
-    let layout = TextureAtlasLayout::from_grid(UVec2::splat(24), 7, 1, None, None);
+    let layout = TextureAtlasLayout::from_grid(UVec2::splat(24), 7, 4, None, None);
     let texture_atlas_layout = texture_atlas_layouts.add(layout);
 
     // The first (left-hand) sprite runs at 20 FPS
-    let animation_config_1 = AnimationConfig::new(0, 6, 20);
+    let move_right_config = AnimationConfig::new(0, 6, 20);
+    let move_left_config = AnimationConfig::new(7, 13, 20);
+    let move_backward_config = AnimationConfig::new(14, 16, 20);
+    let move_forward_config = AnimationConfig::new(21, 25, 20);
 
-    // Create the first (left-hand) sprite
+    // Create a single character that can move in both directions
+    let character = Character {
+        move_right_config: move_right_config.clone(),
+        move_left_config: move_left_config.clone(),
+        move_backward_config: move_backward_config.clone(),
+        move_forward_config: move_forward_config.clone(),
+        current_direction: Direction::Right,
+    };
+
     commands.spawn((
         Sprite {
             image: texture.clone(),
             texture_atlas: Some(TextureAtlas {
                 layout: texture_atlas_layout.clone(),
-                index: animation_config_1.first_sprite_index
+                index: move_right_config.first_sprite_index
             }),
             ..default()
         },
         Transform::from_scale(Vec3::splat(6.0)).with_translation(Vec3::new(0.0, 0.0, 0.0)),
-        LeftSprite,
-        animation_config_1
+        move_right_config, // Start with right movement animation
+        character,
     ));
 }

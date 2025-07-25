@@ -2,7 +2,7 @@ use std::time::Duration;
 
 use bevy::prelude::*;
 
-#[derive(Component)]
+#[derive(Component, Clone)]
 pub struct AnimationConfig {
     pub first_sprite_index: usize,
     pub last_sprite_index: usize,
@@ -26,4 +26,18 @@ impl AnimationConfig {
 }
 
 #[derive(Component)]
-pub struct LeftSprite;
+pub struct Character {
+    pub move_right_config: AnimationConfig,
+    pub move_left_config: AnimationConfig,
+    pub move_backward_config: AnimationConfig,
+    pub move_forward_config: AnimationConfig,
+    pub current_direction: Direction,
+}
+
+#[derive(Clone, Copy, PartialEq)]
+pub enum Direction {
+    Right,
+    Left,
+    Backward,
+    Forward,
+}
