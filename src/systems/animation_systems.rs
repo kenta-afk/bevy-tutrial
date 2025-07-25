@@ -8,25 +8,33 @@ pub fn change_direction(
     mut query: Query<(&mut Character, &mut AnimationConfig, &mut Sprite)>
 ) {
     for (mut character, mut animation_config, mut sprite) in &mut query {
-        if input.just_pressed(KeyCode::ArrowRight) && character.current_direction != Direction::Right {
+        if input.just_pressed(KeyCode::ArrowRight)
+            && character.current_direction != Direction::Right
+        {
             character.current_direction = Direction::Right;
             *animation_config = character.move_right_config.clone();
             if let Some(atlas) = &mut sprite.texture_atlas {
                 atlas.index = animation_config.first_sprite_index;
             }
-        } else if input.just_pressed(KeyCode::ArrowLeft) && character.current_direction != Direction::Left {
+        } else if input.just_pressed(KeyCode::ArrowLeft)
+            && character.current_direction != Direction::Left
+        {
             character.current_direction = Direction::Left;
             *animation_config = character.move_left_config.clone();
             if let Some(atlas) = &mut sprite.texture_atlas {
                 atlas.index = animation_config.first_sprite_index;
             }
-        } else if input.just_pressed(KeyCode::ArrowUp) && character.current_direction != Direction::Forward {
+        } else if input.just_pressed(KeyCode::ArrowUp)
+            && character.current_direction != Direction::Forward
+        {
             character.current_direction = Direction::Forward;
             *animation_config = character.move_forward_config.clone();
             if let Some(atlas) = &mut sprite.texture_atlas {
                 atlas.index = animation_config.first_sprite_index;
             }
-        } else if input.just_pressed(KeyCode::ArrowDown) && character.current_direction != Direction::Backward {
+        } else if input.just_pressed(KeyCode::ArrowDown)
+            && character.current_direction != Direction::Backward
+        {
             character.current_direction = Direction::Backward;
             *animation_config = character.move_backward_config.clone();
             if let Some(atlas) = &mut sprite.texture_atlas {
@@ -41,7 +49,11 @@ pub fn trigger_animation(
     input: Res<ButtonInput<KeyCode>>,
     mut query: Query<&mut AnimationConfig, With<Character>>
 ) {
-    if input.just_pressed(KeyCode::ArrowRight) || input.just_pressed(KeyCode::ArrowLeft) || input.just_pressed(KeyCode::ArrowUp) || input.just_pressed(KeyCode::ArrowDown) {
+    if input.just_pressed(KeyCode::ArrowRight)
+        || input.just_pressed(KeyCode::ArrowLeft)
+        || input.just_pressed(KeyCode::ArrowUp)
+        || input.just_pressed(KeyCode::ArrowDown)
+    {
         for mut animation in &mut query {
             // We create a new timer when the animation is triggered
             animation.frame_timer = AnimationConfig::timer_from_fps(animation.fps);
@@ -110,7 +122,7 @@ pub fn setup_sprites(
         move_left_config: move_left_config.clone(),
         move_backward_config: move_backward_config.clone(),
         move_forward_config: move_forward_config.clone(),
-        current_direction: Direction::Right,
+        current_direction: Direction::Right
     };
 
     commands.spawn((
@@ -124,6 +136,6 @@ pub fn setup_sprites(
         },
         Transform::from_scale(Vec3::splat(6.0)).with_translation(Vec3::new(0.0, 0.0, 0.0)),
         move_right_config, // Start with right movement animation
-        character,
+        character
     ));
 }
