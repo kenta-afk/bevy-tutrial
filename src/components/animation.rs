@@ -31,7 +31,9 @@ pub struct Character {
     pub move_left_config: AnimationConfig,
     pub move_backward_config: AnimationConfig,
     pub move_forward_config: AnimationConfig,
-    pub current_direction: Direction
+    pub idle_config: AnimationConfig,
+    pub current_direction: Direction,
+    pub is_moving: bool
 }
 
 #[derive(Clone, Copy, PartialEq)]
@@ -39,5 +41,6 @@ pub enum Direction {
     Right,
     Left,
     Backward,
-    Forward
+    Forward,
+    Idle
 }
